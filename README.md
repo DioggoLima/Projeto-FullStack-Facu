@@ -1,8 +1,8 @@
 Nome: Diogo Pereira Lima &nbsp;&nbsp;&nbsp;&nbsp;RA: 03.23.159116-3
 
-1. Título do Projeto: **Webiste Paradise Hotel**
+1. Título do Projeto: Website **Paradise Hotel**
 
-2. Público-Alvo: Classe Média Alta e Alta
+3. Público-Alvo: Classe Média Alta e Alta
 
 Características: Indivíduos com alto poder aquisitivo, exigentes em relação à qualidade, conforto e exclusividade. Valorizam experiências personalizadas, design sofisticado e 
 serviço impecável.
