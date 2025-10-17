@@ -1,0 +1,69 @@
+from sqlalchemy import create_engine, Column, Integer, String, DateTime, Text
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.sql import func # Para CURRENT_TIMESTAMP
+
+# 1. Definição da Base Declarativa
+# A Base é o ponto de partida para a definição de modelos.
+Base = declarative_base()
+
+# 2. Modelo ORM para a tabela 'cadastro'
+class Cadastro(Base):
+    """
+    Modelo ORM para a tabela 'cadastro'.
+    """
+    __tablename__ = 'cadastro'
+
+    id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+    name = Column(String(50), nullable=False)
+    email = Column(String(70), nullable=False)
+    password = Column(String(10), nullable=False)
+    gender = Column(Text)
+    created_at = Column(DateTime, default=func.current_timestamp())
+    update_at = Column(DateTime, default=func.current_timestamp(), onupdate=func.current_timestamp())
+    status = Column(Text)
+
+    def __repr__(self):
+        return f"<Cadastro(id={self.id}, name='{self.name}', email='{self.email}')>"
+
+# 3. Modelo ORM para a tabela 'quartos'
+class Quarto(Base):
+    """
+    Modelo ORM para a tabela 'quartos'.
+    """
+    __tablename__ = 'quartos'
+
+    id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+    name = Column(Text, nullable=False) # TEXT sem tamanho definido em SQL mapeia para Text ou String sem tamanho
+    description = Column(Text, nullable=False)
+    price = Column(Text, nullable=False)
+    created_at = Column(DateTime, default=func.current_timestamp())
+    update_at = Column(DateTime, default=func.current_timestamp(), onupdate=func.current_timestamp())
+    status = Column(Text)
+    image = Column(Text) # Coluna 'Image' no SQL
+
+    def __repr__(self):
+        return f"<Quarto(id={self.id}, name='{self.name}', price='{self.price}')>"
+
+# 4. Modelo ORM para a tabela 'ctrl_reserva'
+class CtrlReserva(Base):
+    """
+    Modelo ORM para a tabela 'ctrl_reserva'.
+    """
+    __tablename__ = 'ctrl_reserva'
+
+    id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+    cpf = Column(Text, nullable=False)
+    name = Column(Text, nullable=False)
+    email = Column(Text, nullable=False)
+    room = Column(Text, nullable=False)
+    days = Column(Text, nullable=False)
+    created_at = Column(DateTime, default=func.current_timestamp())
+    updated_at = Column(DateTime, default=func.current_timestamp(), onupdate=func.current_timestamp())
+    status = Column(Text)
+
+    def __repr__(self):
+        return f"<CtrlReserva(id={self.id}, cpf='{self.cpf}', room='{self.room}')>"
+
+# Exemplo de uso (opcional):
+# engine = create_engine('sqlite:///meu_banco_de_dados.db')
+# Base.metadata.create_all(engine)
