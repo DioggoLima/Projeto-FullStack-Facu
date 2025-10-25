@@ -8,14 +8,10 @@ Base = declarative_base()
 
 # 2. Mixin para o campo UserLogUUID
 class LogUUIDMixin:
-   
     UserLogUUID = Column(String(36), nullable=False, unique=True, default=lambda: str(uuid.uuid4()))
 
 # 3. Modelo ORM para a tabela 'cadastro'
 class Cadastro(LogUUIDMixin, Base):
-    """
-    Modelo ORM para a tabela 'cadastro'.
-    """
     __tablename__ = 'cadastro'
 
     id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
@@ -32,9 +28,6 @@ class Cadastro(LogUUIDMixin, Base):
 
 # 4. Modelo ORM para a tabela 'quartos'
 class Quarto(LogUUIDMixin, Base):
-    """
-    Modelo ORM para a tabela 'quartos'.
-    """
     __tablename__ = 'quartos'
 
     id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
@@ -51,9 +44,6 @@ class Quarto(LogUUIDMixin, Base):
 
 # 5. Modelo ORM para a tabela 'ctrl_reserva'
 class CtrlReserva(LogUUIDMixin, Base):
-    """
-    Modelo ORM para a tabela 'ctrl_reserva'.
-    """
     __tablename__ = 'ctrl_reserva'
 
     id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
@@ -68,3 +58,18 @@ class CtrlReserva(LogUUIDMixin, Base):
 
     def __repr__(self):
         return f"<CtrlReserva(id={self.id}, cpf='{self.cpf}', uuid='{self.UserLogUUID}')>"
+
+# 6. Modelo ORM para a tabela 'servicos'
+class Servicos(LogUUIDMixin, Base):
+    __tablename__ = 'servicos'
+
+    id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+    name = Column(Text, nullable=False)
+    description = Column(Text, nullable=False)
+    price = Column(Text, nullable=False)
+    created_at = Column(DateTime, default=func.current_timestamp())
+    updated_at = Column(DateTime, default=func.current_timestamp(), onupdate=func.current_timestamp())
+    status = Column(Text)
+
+    def __repr__(self):
+        return f"<Servicos(id={self.id}, name='{self.name}', uuid='{self.UserLogUUID}')>"
