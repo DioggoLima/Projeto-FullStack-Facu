@@ -15,9 +15,10 @@ class Cadastro(Base):
     created_at = Column(DateTime, default=func.current_timestamp())
     update_at = Column(DateTime, default=func.current_timestamp(), onupdate=func.current_timestamp())
     status = Column(Text)
+    UserLogUUID = Column(String(100))  # <-- novo atributo solicitado
 
     def __repr__(self):
-        return f"<Cadastro(id={self.id}, name='{self.name}', email='{self.email}')>"
+        return f"<Cadastro(id={self.id}, name='{self.name}', email='{self.email}', uuid='{self.UserLogUUID}')>"
 
 class Quarto(Base):
     __tablename__ = 'quartos'
@@ -30,9 +31,10 @@ class Quarto(Base):
     update_at = Column(DateTime, default=func.current_timestamp(), onupdate=func.current_timestamp())
     status = Column(Text)
     image = Column(Text)
+    UserLogUUID = Column(String(100))  # <-- novo atributo solicitado
 
     def __repr__(self):
-        return f"<Quarto(id={self.id}, name='{self.name}', price='{self.price}')>"
+        return f"<Quarto(id={self.id}, name='{self.name}', price='{self.price}', uuid='{self.UserLogUUID}')>"
 
 class CtrlReserva(Base):
     __tablename__ = 'ctrl_reserva'
@@ -46,9 +48,10 @@ class CtrlReserva(Base):
     created_at = Column(DateTime, default=func.current_timestamp())
     updated_at = Column(DateTime, default=func.current_timestamp(), onupdate=func.current_timestamp())
     status = Column(Text)
+    UserLogUUID = Column(String(100))  # <-- novo atributo solicitado
 
     def __repr__(self):
-        return f"<CtrlReserva(id={self.id}, cpf='{self.cpf}', room='{self.room}')>"
+        return f"<CtrlReserva(id={self.id}, cpf='{self.cpf}', room='{self.room}', uuid='{self.UserLogUUID}')>"
 
 class Servico(Base):
     __tablename__ = 'servicos'
@@ -61,6 +64,7 @@ class Servico(Base):
     update_at = Column(DateTime, default=func.current_timestamp(), onupdate=func.current_timestamp())
     status = Column(Text)
     image = Column(Text)
+    UserLogUUID = Column(String(100))  # <-- novo atributo solicitado
 
     def __repr__(self):
-        return f"<Servico(id={self.id}, name='{self.name}', price='{self.price}')>"
+        return f"<Servico(id={self.id}, name='{self.name}', price='{self.price}', uuid='{self.UserLogUUID}')>"
