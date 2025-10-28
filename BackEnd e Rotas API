@@ -1,0 +1,170 @@
+!pip install Flask-SQLAlchemy
+
+from flask import Flask, request, jsonify
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.sql import func
+import uuid
+
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sistema.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
+
+# Base declarativa
+Base = db.Model
+
+# Mixin para UUID
+class LogUUIDMixin:
+    UserLogUUID = db.Column(db.String(36), nullable=False, unique=True, default=lambda: str(uuid.uuid4()))
+
+# Modelo Cadastro
+class Cadastro(LogUUIDMixin, Base):
+    __tablename__ = 'cadastro'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
+    name = db.Column(db.String(50), nullable=False)
+    email = db.Column(db.String(70), nullable=False)
+    password = db.Column(db.String(10), nullable=False)
+    gender = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=func.current_timestamp())
+    update_at = db.Column(db.DateTime, default=func.current_timestamp(), onupdate=func.current_timestamp())
+    status = db.Column(db.Text)
+
+# Modelo Quarto
+class Quarto(LogUUIDMixin, Base):
+    __tablename__ = 'quartos'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
+    name = db.Column(db.Text, nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    price = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=func.current_timestamp())
+    update_at = db.Column(db.DateTime, default=func.current_timestamp(), onupdate=func.current_timestamp())
+    status = db.Column(db.Text)
+    image = db.Column(db.Text)
+
+# Modelo CtrlReserva
+class CtrlReserva(LogUUIDMixin, Base):
+    __tablename__ = 'ctrl_reserva'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
+    cpf = db.Column(db.Text, nullable=False)
+    name = db.Column(db.Text, nullable=False)
+    email = db.Column(db.Text, nullable=False)
+    room = db.Column(db.Text, nullable=False)
+    days = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=func.current_timestamp())
+    updated_at = db.Column(db.DateTime, default=func.current_timestamp(), onupdate=func.current_timestamp())
+    status = db.Column(db.Text)
+
+with app.app_context():
+    db.create_all()
+
+#Cadastro
+
+def add_url_rule_if_not_exists(app, rule, endpoint, view_func, **options):
+    if endpoint not in app.view_functions:
+        app.add_url_rule(rule, endpoint, view_func, **options)
+
+add_url_rule_if_not_exists(app, '/cadastro', 'create_cadastro', create_cadastro, methods=['POST'])
+def create_cadastro():
+    data = request.json
+    novo = Cadastro(
+        name=data.get('name'),
+        email=data.get('email'),
+        password=data.get('password'),
+        gender=data.get('gender'),
+        status=data.get('status')
+    )
+    db.session.add(novo)
+    db.session.commit()
+    return jsonify({'id': novo.id}), 201
+
+add_url_rule_if_not_exists(app, '/cadastro', 'get_cadastros', get_cadastros, methods=['GET'])
+def get_cadastros():
+    cadastros = Cadastro.query.all()
+    return jsonify([{'id': c.id, 'name': c.name, 'email': c.email, 'gender': c.gender, 'created_at': c.created_at, 'update_at': c.update_at, 'status': c.status, 'UserLogUUID': c.UserLogUUID} for c in cadastros])
+
+add_url_rule_if_not_exists(app, '/cadastro/<int:id>', 'update_cadastro', update_cadastro, methods=['PUT'])
+def update_cadastro(id):
+    data = request.json
+    cadastro = Cadastro.query.get_or_404(id)
+    for key, value in data.items():
+        setattr(cadastro, key, value)
+    db.session.commit()
+    return jsonify({'message': 'Cadastro atualizado'})
+
+add_url_rule_if_not_exists(app, '/cadastro/<int:id>', 'delete_cadastro', delete_cadastro, methods=['DELETE'])
+def delete_cadastro(id):
+    cadastro = Cadastro.query.get_or_404(id)
+    db.session.delete(cadastro)
+    db.session.commit()
+    return jsonify({'message': 'Cadastro removido'})
+
+#Quartos
+
+def add_url_rule_if_not_exists(app, rule, endpoint, view_func, **options):
+    if endpoint not in app.view_functions:
+        app.add_url_rule(rule, endpoint, view_func, **options)
+
+add_url_rule_if_not_exists(app, '/quarto', 'create_quarto', create_quarto, methods=['POST'])
+def create_quarto():
+    data = request.json
+    novo = Quarto(**data)
+    db.session.add(novo)
+    db.session.commit()
+    return jsonify({'id': novo.id}), 201
+
+add_url_rule_if_not_exists(app, '/quarto', 'get_quartos', get_quartos, methods=['GET'])
+def get_quartos():
+    quartos = Quarto.query.all()
+    return jsonify([{'id': q.id, 'name': q.name, 'description': q.description, 'price': q.price, 'created_at': q.created_at, 'update_at': q.update_at, 'status': q.status, 'image': q.image, 'UserLogUUID': q.UserLogUUID} for q in quartos])
+
+add_url_rule_if_not_exists(app, '/quarto/<int:id>', 'update_quarto', update_quarto, methods=['PUT'])
+def update_quarto(id):
+    data = request.json
+    quarto = Quarto.query.get_or_404(id)
+    for key, value in data.items():
+        setattr(quarto, key, value)
+    db.session.commit()
+    return jsonify({'message': 'Quarto atualizado'})
+
+add_url_rule_if_not_exists(app, '/quarto/<int:id>', 'delete_quarto', delete_quarto, methods=['DELETE'])
+def delete_quarto(id):
+    quarto = Quarto.query.get_or_404(id)
+    db.session.delete(quarto)
+    db.session.commit()
+    return jsonify({'message': 'Quarto removido'})
+
+#Ctrl_Reserva
+
+def add_url_rule_if_not_exists(app, rule, endpoint, view_func, **options):
+    if endpoint not in app.view_functions:
+        app.add_url_rule(rule, endpoint, view_func, **options)
+
+add_url_rule_if_not_exists(app, '/reserva', 'create_reserva', create_reserva, methods=['POST'])
+def create_reserva():
+    data = request.json
+    nova = CtrlReserva(**data)
+    db.session.add(nova)
+    db.session.commit()
+    return jsonify({'id': nova.id}), 201
+
+add_url_rule_if_not_exists(app, '/reserva', 'get_reservas', get_reservas, methods=['GET'])
+def get_reservas():
+    reservas = CtrlReserva.query.all()
+    return jsonify([r.__dict__ for r in reservas])
+
+add_url_rule_if_not_exists(app, '/reserva/<int:id>', 'update_reserva', update_reserva, methods=['PUT'])
+def update_reserva(id):
+    data = request.json
+    reserva = CtrlReserva.query.get_or_404(id)
+    for key, value in data.items():
+        setattr(reserva, key, value)
+    db.session.commit()
+    return jsonify({'message': 'Reserva atualizada'})
+
+add_url_rule_if_not_exists(app, '/reserva/<int:id>', 'delete_reserva', delete_reserva, methods=['DELETE'])
+def delete_reserva(id):
+    reserva = CtrlReserva.query.get_or_404(id)
+    db.session.delete(reserva)
+    db.session.commit()
+    return jsonify({'message': 'Reserva removida'})
+
