@@ -168,3 +168,44 @@ def delete_reserva(id):
     db.session.commit()
     return jsonify({'message': 'Reserva removida'})
 
+add_url_rule_if_not_exists(app, '/servico', 'create_servico', create_servico, methods=['POST'])
+def create_servico():
+    data = request.json
+    novo = Servico(**data)
+    db.session.add(novo)
+    db.session.commit()
+    return jsonify({'id': novo.id}), 201
+
+add_url_rule_if_not_exists(app, '/servico', 'get_servicos', get_servicos, methods=['GET'])
+def get_servicos():
+    servicos = Servico.query.all()
+    return jsonify([
+        {
+            'id': s.id,
+            'name': s.name,
+            'description': s.description,
+            'price': s.price,
+            'created_at': s.created_at,
+            'update_at': s.update_at,
+            'status': s.status,
+            'image': s.image,
+            'UserLogUUID': s.UserLogUUID
+        }
+        for s in servicos
+    ])
+
+add_url_rule_if_not_exists(app, '/servico/<int:id>', 'update_servico', update_servico, methods=['PUT'])
+def update_servico(id):
+    data = request.json
+    servico = Servico.query.get_or_404(id)
+    for key, value in data.items():
+        setattr(servico, key, value)
+    db.session.commit()
+    return jsonify({'message': 'Serviço atualizado'})
+
+add_url_rule_if_not_exists(app, '/servico/<int:id>', 'delete_servico', delete_servico, methods=['DELETE'])
+def delete_servico(id):
+    servico = Servico.query.get_or_404(id)
+    db.session.delete(servico)
+    db.session.commit()
+    return jsonify({'message': 'Serviço removido'})
